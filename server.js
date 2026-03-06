@@ -11,7 +11,11 @@ const PORT = process.env.PORT || 3000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+//FIXES FROM ME......
+import expressLayouts from "express-ejs-layouts";
 const app = express();
+app.use(expressLayouts);
+//MY FIXES END HERE....
 
 // Set EJS as the templating engine
 app.set('view engine', 'ejs');
