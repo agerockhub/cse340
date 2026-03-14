@@ -4,6 +4,10 @@ import path from 'path';
 import { testConnection } from './src/models/db.js';
 import { getAllOrganizations } from './src/models/organizations.js';
 
+//projects
+import { getAllProjects } from './src/models/projects.js';
+
+
 const PORT = process.env.PORT || 3000;
 
 const __filename = fileURLToPath(import.meta.url);
@@ -43,5 +47,25 @@ app.listen(PORT, async () => {
     console.log(`Environment: ${NODE_ENV}`);
   } catch (error) {
     console.error('Error connecting to the database:', error);
+  }
+});
+
+//projects PAGE
+app.get('/projects', async (req, res) => {
+  try {
+    const projects = await getAllProjects();
+
+    // Display projects in the console
+    console.log("Service Projects:");
+    console.log(projects);
+
+    res.render('projects', {
+      title: 'Service Projects',
+      projects
+    });
+
+  } catch (error) {
+    console.error("Error retrieving projects:", error);
+    res.status(500).send("Database error");
   }
 });
