@@ -1,15 +1,22 @@
 <%- include('partials/header') %>
+
     <main>
         <h1>
             <%= title %>
         </h1>
-        <!-- Put your page-specific content here -->
-                <h2>Our categories</h2>
-                <ul>
-                    <li>Environmental</li>
-                    <li>Educational</li>
-                    <li>Community service</li>
-                    <li>Health and wellness</li>
-                </ul>
+
+        <h2>Categories</h2>
+        <ul>
+            <% if (categories && categories.length> 0) { %>
+                <% categories.forEach(category=> { %>
+                    <li>
+                        <%= category.name %>
+                    </li>
+                    <% }) %>
+                        <% } else { %>
+                            <li>No categories available</li>
+                            <% } %>
+        </ul>
     </main>
+
     <%- include('partials/footer') %>

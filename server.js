@@ -31,33 +31,12 @@ app.get('/organizations', async (req, res) => {
     res.render('organizations', { title, organizations });
 });
 
-app.get('/projects', (req, res) => {
-  res.render('projects', { title: 'Service Projects' });
-});
-
-//my new page
-app.get('/categories', (req, res) => {
-  res.render('categories', { title: 'Our categories' });
-});
-
-app.listen(PORT, async () => {
-  try {
-    await testConnection();
-    console.log(`Server is running at http://127.0.0.1:${PORT}`);
-    console.log(`Environment: ${NODE_ENV}`);
-  } catch (error) {
-    console.error('Error connecting to the database:', error);
-  }
-});
 
 //projects PAGE
+// projects PAGE
 app.get('/projects', async (req, res) => {
   try {
     const projects = await getAllProjects();
-
-    // Display projects in the console
-    console.log("Service Projects:");
-    console.log(projects);
 
     res.render('projects', {
       title: 'Service Projects',
@@ -67,5 +46,34 @@ app.get('/projects', async (req, res) => {
   } catch (error) {
     console.error("Error retrieving projects:", error);
     res.status(500).send("Database error");
+  }
+});
+
+app.listen(PORT, async () => {
+  try {
+    await testConnection();
+    console.log(`Server is running at http://127.0.0.1:${PORT}`);
+    console.log(`Environment: ${process.env.NODE_ENV}`);
+  } catch (error) {
+    console.error('Error connecting to the database:', error);
+  }
+});
+
+// import at the top
+import { getAllCategories } from './src/models/categories.js';
+
+// categories PAGE
+app.get('/categories', async (req, res) => {
+  try {
+    const categories = await getAllCategories();
+
+    res.render('categories', {
+      title: 'Our Categories',
+      categories
+    });
+
+  } catch (error) {
+    console.error('Error retrieving categories:', error);
+    res.status(500).send('Database error');
   }
 });
