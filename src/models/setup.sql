@@ -175,3 +175,16 @@ VALUES -- Organization 1
     );
 SELECT *
 FROM service_project;
+-- ==================================
+-- category Table
+-- ==================================
+CREATE TABLE category (
+    category_id SERIAL PRIMARY KEY,
+    name VARCHAR(150) NOT NULL
+);
+INSERT INTO category (name)
+VALUES ('Education'),
+    ('Health'),
+    ('Technology'),
+    ('Environment'),
+    ('Community Development');
