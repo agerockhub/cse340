@@ -8,22 +8,40 @@
         <h2>Upcoming Service Projects</h2>
 
         <ul>
-
             <% if (projects && projects.length> 0) { %>
 
                 <% projects.forEach(project=> { %>
 
-                    <% const formattedDate=project.project_date ? new
-                        Date(project.project_date).toLocaleDateString('en-US', { year: 'numeric' , month: 'long' ,
-                        day: 'numeric' }) : 'Date not available' ; %>
+                    <% const formattedDate=project.date ? new Date(project.date).toLocaleDateString('en-US', {
+                        year: 'numeric' , month: 'long' , day: 'numeric' }) : 'Date not available' ; %>
 
                         <li>
-                            <%= formattedDate %>:
+                            <!-- ✅ Project link -->
+                            <a href="/project/<%= project.project_id %>">
                                 <strong>
                                     <%= project.title %>
                                 </strong>
-                                (<%= project.organization_name %>)
+                            </a>
+
+                            <br>
+
+                            <!-- Date -->
+                            <span>
+                                <%= formattedDate %>
+                            </span>
+
+                            <br>
+
+                            <!-- ✅ Organization link -->
+                            <span>
+                                Organization:
+                                <a href="/organization/<%= project.organization_id %>">
+                                    <%= project.organization_name %>
+                                </a>
+                            </span>
                         </li>
+
+                        <hr>
 
                         <% }) %>
 
@@ -32,7 +50,6 @@
                                 <li>No projects available</li>
 
                                 <% } %>
-
         </ul>
 
     </main>
