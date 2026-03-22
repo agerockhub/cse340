@@ -1,10 +1,13 @@
 // Import model functions
-import { getUpcomingProjects, getProjectDetails } from '../models/projects.js';
+import { 
+    getUpcomingProjects, 
+    getProjectDetails, 
+    getCategoriesByProjectId 
+} from '../models/projects.js';
 
-// ✅ Define constant (THIS was missing)
 const NUMBER_OF_UPCOMING_PROJECTS = 5;
 
-// Controller: show upcoming projects
+// Show upcoming projects
 const showProjectsPage = async (req, res) => {
     const projects = await getUpcomingProjects(NUMBER_OF_UPCOMING_PROJECTS);
 
@@ -14,19 +17,22 @@ const showProjectsPage = async (req, res) => {
     });
 };
 
-// Controller: show single project details
+// ✅ UPDATED: include categories
 const showProjectDetailsPage = async (req, res) => {
     const projectId = req.params.id;
 
     const project = await getProjectDetails(projectId);
 
+    // 🔥 Get categories for this project
+    const categories = await getCategoriesByProjectId(projectId);
+
     res.render('project', {
         title: project.title,
-        project
+        project,
+        categories   // ✅ pass to view
     });
 };
 
-// ✅ Export ONLY ONCE
 export { 
     showProjectsPage,
     showProjectDetailsPage

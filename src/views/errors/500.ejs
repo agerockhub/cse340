@@ -1,0 +1,21 @@
+<!-- src/views/errors/500.ejs -->
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>
+        <%= title %>
+    </title>
+</head>
+
+<body>
+    <h1>500 - Server Error</h1>
+    <p>
+        <%= error %>
+    </p>
+    <% if (stack) { %>
+        <pre><%= stack %></pre>
+        <% } %>
+</body>
+
+</html>

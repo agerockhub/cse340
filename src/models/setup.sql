@@ -188,3 +188,33 @@ VALUES ('Education'),
     ('Technology'),
     ('Environment'),
     ('Community Development');
+-- ==================================
+-- project_category (Junction Table)
+-- ==================================
+CREATE TABLE project_category (
+    project_id INT NOT NULL,
+    category_id INT NOT NULL,
+    PRIMARY KEY (project_id, category_id),
+    CONSTRAINT fk_project FOREIGN KEY (project_id) REFERENCES service_project(project_id) ON DELETE CASCADE,
+    CONSTRAINT fk_category FOREIGN KEY (category_id) REFERENCES category(category_id) ON DELETE CASCADE
+);
+-- ==================================
+-- Sample project-category relationships
+-- ==================================
+INSERT INTO project_category (project_id, category_id)
+VALUES -- Education
+    (1, 1),
+    (2, 1),
+    (7, 1),
+    -- Health
+    (4, 2),
+    (5, 2),
+    -- Technology
+    (1, 3),
+    (3, 3),
+    -- Environment
+    (10, 4),
+    (11, 4),
+    -- Community Development
+    (6, 5),
+    (12, 5);

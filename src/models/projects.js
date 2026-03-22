@@ -1,4 +1,4 @@
-import db from './db.js'
+import db from './db.js';
 
 // Get all projects
 const getAllProjects = async () => {
@@ -16,7 +16,6 @@ const getAllProjects = async () => {
         ON sp.organization_id = o.organization_id
         ORDER BY sp.project_date;
     `;
-
     const result = await db.query(query);
     return result.rows;
 };
@@ -35,7 +34,6 @@ const getProjectsByOrganizationId = async (organizationId) => {
         WHERE organization_id = $1
         ORDER BY project_date;
     `;
-      
     const result = await db.query(query, [organizationId]);
     return result.rows;
 };
@@ -58,7 +56,6 @@ const getUpcomingProjects = async (number_of_projects) => {
         ORDER BY sp.project_date ASC
         LIMIT $1;
     `;
-
     const result = await db.query(query, [number_of_projects]);
     return result.rows;
 };
@@ -79,15 +76,34 @@ const getProjectDetails = async (projectId) => {
         ON sp.organization_id = o.organization_id
         WHERE sp.project_id = $1;
     `;
-
     const result = await db.query(query, [projectId]);
     return result.rows[0];
 };
 
-// ✅ Export everything ONCE
+// Get categories for a project
+const getCategoriesByProjectId = async (projectId) => {
+    const query = `
+        SELECT 
+            c.category_id,
+            c.name
+        FROM public.category c
+        JOIN public.project_category pc 
+            ON c.category_id = pc.category_id
+        WHERE pc.project_id = $1;
+    `;
+
+    const result = await db.query(query, [projectId]);
+    return result.rows;
+};
+
+
+
+// ✅ Export all project functions
 export { 
     getAllProjects, 
     getProjectsByOrganizationId, 
     getUpcomingProjects, 
-    getProjectDetails 
+    getProjectDetails,
+    getCategoriesByProjectId
 };
+

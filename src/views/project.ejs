@@ -12,11 +12,9 @@
             <p><strong>Description:</strong>
                 <%= project.description %>
             </p>
-
             <p><strong>Date:</strong>
                 <%= formattedDate %>
             </p>
-
             <p><strong>Location:</strong>
                 <%= project.location %>
             </p>
@@ -28,9 +26,24 @@
                 </a>
             </p>
 
-            <br>
+            <!-- ✅ Category Tags -->
+            <% if (categories && categories.length> 0) { %>
+                <% } else { %>
+                    <p><strong>Categories:</strong> None</p>
+                    <% } %>
+                <p>
+                    <strong>Categories:</strong>
+                    <% categories.forEach((category, index)=> { %>
+                        <a href="/category/<%= category.category_id %>">
+                            <%= category.name %>
+                        </a>
+                        <%= index < categories.length - 1 ? ', ' : '' %>
+                            <% }) %>
+                </p>
+                <% } %>
 
-            <a href="/projects">← Back to Projects</a>
+                    <br>
+                    <a href="/projects">← Back to Projects</a>
 
     </main>
 
