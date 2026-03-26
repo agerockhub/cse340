@@ -2,48 +2,52 @@
 
     <main>
 
-        <h1>
-            <%= project.title %>
-        </h1>
+        <% if (project) { %>
 
-        <% const formattedDate=project.date ? new Date(project.date).toLocaleDateString('en-US', { year: 'numeric' ,
-            month: 'long' , day: 'numeric' }) : 'Date not available' ; %>
+            <h1>
+                <%= project.title %>
+            </h1>
 
-            <p><strong>Description:</strong>
-                <%= project.description %>
-            </p>
-            <p><strong>Date:</strong>
-                <%= formattedDate %>
-            </p>
-            <p><strong>Location:</strong>
-                <%= project.location %>
-            </p>
+            <% const formattedDate=project.project_date ? new Date(project.project_date).toLocaleDateString('en-US', {
+                year: 'numeric' , month: 'long' , day: 'numeric' }) : 'Date not available' ; %>
 
-            <p>
-                <strong>Organization:</strong>
-                <a href="/organization/<%= project.organization_id %>">
-                    <%= project.organization_name %>
-                </a>
-            </p>
-
-            <!-- ✅ Category Tags -->
-            <% if (categories && categories.length> 0) { %>
-                <% } else { %>
-                    <p><strong>Categories:</strong> None</p>
-                    <% } %>
-                <p>
-                    <strong>Categories:</strong>
-                    <% categories.forEach((category, index)=> { %>
-                        <a href="/category/<%= category.category_id %>">
-                            <%= category.name %>
-                        </a>
-                        <%= index < categories.length - 1 ? ', ' : '' %>
-                            <% }) %>
+                <p><strong>Description:</strong>
+                    <%= project.description %>
                 </p>
-                <% } %>
+                <p><strong>Date:</strong>
+                    <%= formattedDate %>
+                </p>
+                <p><strong>Location:</strong>
+                    <%= project.location %>
+                </p>
 
-                    <br>
-                    <a href="/projects">← Back to Projects</a>
+                <p>
+                    <strong>Organization:</strong>
+                    <a href="/organization/<%= project.organization_id %>">
+                        <%= project.organization_name %>
+                    </a>
+                </p>
+
+                <!-- ✅ FIXED Categories -->
+                <p><strong>Categories:</strong>
+                    <% if (categories && categories.length> 0) { %>
+                        <% categories.forEach((category, index)=> { %>
+                            <a href="/category/<%= category.category_id %>">
+                                <%= category.name %>
+                            </a>
+                            <%= index < categories.length - 1 ? ', ' : '' %>
+                                <% }); %>
+                                    <% } else { %>
+                                        None
+                                        <% } %>
+                </p>
+
+                <% } else { %>
+                    <p>Project not found.</p>
+                    <% } %>
+
+                        <br>
+                        <a href="/projects">← Back to Projects</a>
 
     </main>
 

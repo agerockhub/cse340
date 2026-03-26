@@ -7,5 +7,6 @@ const showHomePage = async (req, res) => {
     res.render('home', { title });
 };
 
+
 // Export any controller functions
 export { showHomePage };
