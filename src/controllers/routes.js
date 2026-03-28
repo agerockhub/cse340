@@ -5,7 +5,8 @@ import {
     showOrganizationsPage, 
     showOrganizationDetailsPage, 
     showNewOrganizationForm,
-    processNewOrganizationForm 
+    processNewOrganizationForm,
+    organizationValidation
 } from './organizations.js';
 import { showProjectsPage, showProjectDetailsPage } from './projects.js';
 import { showCategoriesPage, showCategoryDetailsPage } from './categories.js';
@@ -22,7 +23,8 @@ router.get('/categories', showCategoriesPage);
 // Organization routes
 router.get('/organizations/new', showNewOrganizationForm);
 router.get('/organization/:id', showOrganizationDetailsPage);
-router.post('/new-organization', processNewOrganizationForm);
+// Route to handle new organization form submission
+router.post('/new-organization', organizationValidation, processNewOrganizationForm);
 
 // Project routes
 router.get('/project/:id', showProjectDetailsPage);
