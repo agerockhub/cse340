@@ -1,9 +1,13 @@
+// src/controllers/categories.js
 import { 
     getAllCategories, 
     getCategoryById, 
     getProjectsByCategoryId 
 } from '../models/categories.js';
 
+console.log('Categories controller loaded'); // helps debugging
+
+// Show all categories
 const showCategoriesPage = async (req, res, next) => {
     try {
         const categories = await getAllCategories();
@@ -13,6 +17,7 @@ const showCategoriesPage = async (req, res, next) => {
     }
 };
 
+// Show single category details
 const showCategoryDetailsPage = async (req, res, next) => {
     try {
         const categoryId = req.params.id;
@@ -36,7 +41,5 @@ const showCategoryDetailsPage = async (req, res, next) => {
     }
 };
 
-export { 
-    showCategoriesPage,
-    showCategoryDetailsPage
-};
+// ✅ Proper named exports
+export { showCategoriesPage, showCategoryDetailsPage };

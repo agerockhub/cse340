@@ -1,11 +1,11 @@
+// src/controllers/routes.js
 import express from 'express';
-
 import { showHomePage } from './index.js';
 import { 
     showOrganizationsPage, 
     showOrganizationDetailsPage, 
     showNewOrganizationForm,
-     processNewOrganizationForm 
+    processNewOrganizationForm 
 } from './organizations.js';
 import { showProjectsPage, showProjectDetailsPage } from './projects.js';
 import { showCategoriesPage, showCategoryDetailsPage } from './categories.js';
@@ -19,23 +19,19 @@ router.get('/organizations', showOrganizationsPage);
 router.get('/projects', showProjectsPage);
 router.get('/categories', showCategoriesPage);
 
-// ✅ NEW ROUTE (Add Organization Form)
+// Organization routes
 router.get('/organizations/new', showNewOrganizationForm);
-
-// Organization details
 router.get('/organization/:id', showOrganizationDetailsPage);
+router.post('/new-organization', processNewOrganizationForm);
 
-// Project details
+// Project routes
 router.get('/project/:id', showProjectDetailsPage);
 
-// Category details
+// Category routes
 router.get('/category/:id', showCategoryDetailsPage);
 
 // Error testing
 router.get('/test-error', testErrorPage);
-// Route for new organization page
-router.get('/new-organization', showNewOrganizationForm);
-// Route to handle new organization form submission
-router.post('/new-organization', processNewOrganizationForm);
 
+// ✅ Default export
 export default router;

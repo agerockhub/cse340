@@ -1,60 +1,68 @@
+// server.js
 import express from 'express';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import { testConnection } from './src/models/db.js';
-import router from './src/controllers/routes.js'; // make sure file is "routes.js"
+import router from './src/controllers/routes.js';
 import session from 'express-session';
 import flash from './src/middleware/flash.js';
 
-
-
 const PORT = process.env.PORT || 3000;
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// Set up session management
+// Sessions
 app.use(session({
     secret: 'your-secret-key',
     resave: false,
     saveUninitialized: true,
-    cookie: { maxAge: 60 * 60 * 1000 } // Session expires after 1 hour of inactivity
+    cookie: { maxAge: 60 * 60 * 1000 }
 }));
 
-// Use flash message middleware
+// Flash messages
 app.use(flash);
+app.use((req, res, next) => {
+    res.locals.flash = req.flash;
+    next();
+});
 
-// Allow Express to receive and process common POST data
+// Body parsers
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+// Static files
 app.use(express.static(path.join(__dirname, 'public')));
+
+// View engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'src/views'));
 
-// Log requests in development
+// Development logger
 app.use((req, res, next) => {
-    if (process.env.NODE_ENV?.toLowerCase() === 'development') {
+    if (process.env.NODE_ENV === 'development') {
         console.log(`${req.method} ${req.url}`);
     }
     next();
 });
 
-// NODE_ENV available in templates
+// Make NODE_ENV available in views
 app.use((req, res, next) => {
     res.locals.NODE_ENV = process.env.NODE_ENV?.toLowerCase() || 'production';
     next();
 });
 
-// Use routes
-app.use(router);
+// Routes
+app.use('/', router);
 
 // 404 handler
-app.use((req, res, next) => {
-    const err = new Error('Page Not Found');
-    err.status = 404;
-    next(err);
+app.use((req, res) => {
+    res.status(404).render('errors/404', {
+        title: 'Page Not Found',
+        error: 'The page you are looking for does not exist.'
+    });
 });
 
 // Global error handler
@@ -64,10 +72,11 @@ app.use((err, req, res, next) => {
     res.status(status).render(`errors/${status === 404 ? '404' : '500'}`, {
         title: status === 404 ? 'Page Not Found' : 'Server Error',
         error: err.message,
-        stack: err.stack
+        stack: process.env.NODE_ENV === 'development' ? err.stack : null
     });
 });
 
+// Start server
 app.listen(PORT, async () => {
     try {
         await testConnection();
