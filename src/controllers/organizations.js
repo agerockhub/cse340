@@ -25,7 +25,28 @@ const showNewOrganizationForm = async (req, res) => {
     res.render('new-organization', { title });
 };
 
-// ✅ NEW: Handle form submission
+// Handle form submission and store success message
+const processNewOrganizationForm = async (req, res) => {
+    try {
+        const { name, description, contactEmail } = req.body;
+        const logoFilename = 'placeholder-logo.png'; // Use the placeholder logo for all new organizations
+
+        // Create the new organization
+        const organizationId = await createOrganization(name, description, contactEmail, logoFilename);
+
+        // ✅ Set a success flash message
+        req.flash('success', 'Organization added successfully!');
+
+        // Redirect to the organization's details page
+        res.redirect(`/organization/${organizationId}`);
+    } catch (error) {
+        console.error(error);
+        req.flash('error', 'Failed to create organization. Please try again.');
+        res.redirect('/organizations/new');
+    }
+};
+
+// Legacy/additional handler (if still used)
 const addOrganization = async (req, res) => {
     try {
         const { name, description, contact_email, logo_filename } = req.body;
@@ -39,17 +60,6 @@ const addOrganization = async (req, res) => {
         res.status(500).send('Error creating organization');
     }
 };
-
-const processNewOrganizationForm = async (req, res) => {
-    const { name, description, contactEmail } = req.body;
-    const logoFilename = 'placeholder-logo.png'; // Use the placeholder logo for all new organizations
-
-    const organizationId = await createOrganization(name, description, contactEmail, logoFilename);
-    res.redirect(`/organization/${organizationId}`);
-};
-
-
-
 
 // ✅ EXPORT EVERYTHING
 export { 

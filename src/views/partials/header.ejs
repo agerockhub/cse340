@@ -11,23 +11,35 @@
 </head>
 
 <body>
-<nav>
-    <div class="nav-container">
+    <nav>
+        <div class="nav-container">
 
-        <div class="logo">CSE 340</div>
+            <div class="logo">CSE 340</div>
 
-        <div class="hamburger" id="hamburger">
-            ☰
+            <div class="hamburger" id="hamburger">
+                ☰
+            </div>
+
+            <ul id="nav-menu">
+                <li><a href="/">Home</a></li>
+                <li><a href="/organizations">Organizations</a></li>
+                <li><a href="/projects">Projects</a></li>
+                <li><a href="/categories">Categories</a></li>
+            </ul>
+
         </div>
+    </nav>
 
-        <ul id="nav-menu">
-            <li><a href="/">Home</a></li>
-            <li><a href="/organizations">Organizations</a></li>
-            <li><a href="/projects">Projects</a></li>
-            <li><a href="/categories">Categories</a></li>
-        </ul>
-
+    <!-- Flash Messages -->
+    <div class="flash-messages">
+        <% const messages=flash(); %>
+            <% Object.keys(messages).forEach(type=> { %>
+                <% messages[type].forEach(msg=> { %>
+                    <div class="flash <%= type %>">
+                        <%= msg %>
+                    </div>
+                    <% }); %>
+                        <% }); %>
     </div>
-</nav>
 
-<script src="/js/script.js" defer></script>
+    <script src="/js/script.js" defer></script>

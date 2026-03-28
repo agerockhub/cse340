@@ -207,3 +207,38 @@ main ul li {
   }
 
 }
+
+/* Flash message container */
+.flash-messages {
+  position: fixed;
+  /* Float over content */
+  top: 70px;
+  /* Below the nav bar */
+  right: 20px;
+  width: 300px;
+  z-index: 1000;
+}
+
+/* General flash styling */
+.flash {
+  padding: 12px 20px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  color: #fff;
+  font-weight: bold;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  opacity: 0.95;
+  transition: all 0.5s ease;
+}
+
+/* Success messages */
+.flash.success {
+  background-color: #4CAF50;
+  /* Green */
+}
+
+/* Error messages */
+.flash.error {
+  background-color: #f44336;
+  /* Red */
+}
