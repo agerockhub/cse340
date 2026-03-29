@@ -1,4 +1,3 @@
-// src/controllers/routes.js
 import express from 'express';
 import { showHomePage } from './index.js';
 
@@ -18,21 +17,25 @@ import {
     showNewProjectForm,
     processNewProjectForm,
     projectValidation,
-    showEditProjectForm,    // ✅ Added
-    processEditProjectForm  // ✅ Added
+    showEditProjectForm,
+    processEditProjectForm
 } from './projects.js';
 
-// Combined all category imports into one block
 import { 
     showCategoriesPage, 
     showCategoryDetailsPage, 
     showAssignCategoriesForm, 
-    processAssignCategoriesForm 
+    processAssignCategoriesForm,
+    showAddCategoryForm,       // ✅ New
+    processAddCategoryForm,    // ✅ New
+    showEditCategoryForm,      // ✅ New
+    processEditCategoryForm,   // ✅ New
+    categoryValidation         // ✅ New
 } from './categories.js';
 
 import { testErrorPage } from './errors.js';
 
-const router = express.Router();
+const router = express.Router(); // ✅ This line must stay here!
 
 // Main routes
 router.get('/', showHomePage);
@@ -51,13 +54,17 @@ router.post('/new-organization', organizationValidation, processNewOrganizationF
 router.get('/project/:id', showProjectDetailsPage);
 router.get('/new-project', showNewProjectForm);
 router.post('/new-project', projectValidation, processNewProjectForm);
-
-// ✅ NEW: Edit Project routes
 router.get('/edit-project/:id', showEditProjectForm);
 router.post('/edit-project/:id', projectValidation, processEditProjectForm);
 
-// Category routes
+// Category Management Routes
 router.get('/category/:id', showCategoryDetailsPage);
+router.get('/categories/new', showAddCategoryForm);
+router.post('/categories/new', categoryValidation, processAddCategoryForm);
+router.get('/categories/edit/:id', showEditCategoryForm);
+router.post('/categories/edit/:id', categoryValidation, processEditCategoryForm);
+
+// Project-Category assignment routes
 router.get('/assign-categories/:projectId', showAssignCategoriesForm);
 router.post('/assign-categories/:projectId', processAssignCategoriesForm);
 
