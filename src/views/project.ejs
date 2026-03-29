@@ -1,13 +1,17 @@
 <%- include('partials/header') %>
 
     <main>
-
         <% if (project) { %>
-
             <h1>
                 <%= project.title %>
             </h1>
-<a href="/assign-categories/<%= project.project_id %>">Edit Categories</a>
+
+            <!-- ✅ Admin Action Links -->
+            <div class="admin-controls" style="margin-bottom: 20px;">
+                <a href="/edit-project/<%= project.project_id %>" class="btn">Edit Project Details</a> |
+                <a href="/assign-categories/<%= project.project_id %>" class="btn">Edit Categories</a>
+            </div>
+
             <% const formattedDate=project.project_date ? new Date(project.project_date).toLocaleDateString('en-US', {
                 year: 'numeric' , month: 'long' , day: 'numeric' }) : 'Date not available' ; %>
 
@@ -28,7 +32,6 @@
                     </a>
                 </p>
 
-                <!-- ✅ FIXED Categories -->
                 <p><strong>Categories:</strong>
                     <% if (categories && categories.length> 0) { %>
                         <% categories.forEach((category, index)=> { %>
@@ -48,7 +51,6 @@
 
                         <br>
                         <a href="/projects">← Back to Projects</a>
-
     </main>
 
-    <%- include('partials/footer') %>
+    <%- include('partials/header') %>

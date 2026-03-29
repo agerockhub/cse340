@@ -1,3 +1,4 @@
+// src/models/projects.js
 import db from './db.js';
 
 // Get all projects
@@ -67,7 +68,7 @@ const getCategoriesByServiceProjectId = async (projectId) => {
     return result.rows;
 };
 
-// Update categories (Deletes old ones and inserts new selections)
+// Update categories
 const updateCategoryAssignments = async (projectId, categoryIds) => {
     try {
         await db.query('BEGIN');
@@ -111,7 +112,36 @@ const createProject = async (title, description, location, date, organizationId)
     return result.rows[0].project_id;
 };
 
-// ✅ ALL EXPORTS RESTORED
+/**
+ * Updates an existing service project
+ * Matches the pattern in updateOrganization
+ */
+const updateProject = async (projectId, title, description, location, date, organizationId) => {
+    const query = `
+        UPDATE public.service_project 
+        SET 
+            title = $1, 
+            description = $2, 
+            location = $3, 
+            project_date = $4, 
+            organization_id = $5
+        WHERE project_id = $6
+        RETURNING project_id;
+    `;
+    
+    const params = [title, description, location, date, organizationId, projectId];
+    const result = await db.query(query, params);
+
+    // ✅ Throw error if the update failed
+    if (result.rows.length === 0) {
+        throw new Error('Project not found or update failed');
+    }
+
+    // Return the updated project ID
+    return result.rows[0].project_id;
+};
+
+// ✅ ALL EXPORTS INCLUDED
 export { 
     getAllProjects, 
     getProjectsByOrganizationId, 
@@ -120,5 +150,6 @@ export {
     getCategoriesByProjectId,
     getCategoriesByServiceProjectId,
     updateCategoryAssignments,
-    createProject
+    createProject,
+    updateProject
 };

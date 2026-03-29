@@ -17,10 +17,12 @@ import {
     showProjectDetailsPage, 
     showNewProjectForm,
     processNewProjectForm,
-    projectValidation 
+    projectValidation,
+    showEditProjectForm,    // ✅ Added
+    processEditProjectForm  // ✅ Added
 } from './projects.js';
 
-// ✅ Combined all category imports into one block
+// Combined all category imports into one block
 import { 
     showCategoriesPage, 
     showCategoryDetailsPage, 
@@ -49,6 +51,10 @@ router.post('/new-organization', organizationValidation, processNewOrganizationF
 router.get('/project/:id', showProjectDetailsPage);
 router.get('/new-project', showNewProjectForm);
 router.post('/new-project', projectValidation, processNewProjectForm);
+
+// ✅ NEW: Edit Project routes
+router.get('/edit-project/:id', showEditProjectForm);
+router.post('/edit-project/:id', projectValidation, processEditProjectForm);
 
 // Category routes
 router.get('/category/:id', showCategoryDetailsPage);
