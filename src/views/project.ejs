@@ -7,7 +7,7 @@
             <h1>
                 <%= project.title %>
             </h1>
-
+<a href="/assign-categories/<%= project.project_id %>">Edit Categories</a>
             <% const formattedDate=project.project_date ? new Date(project.project_date).toLocaleDateString('en-US', {
                 year: 'numeric' , month: 'long' , day: 'numeric' }) : 'Date not available' ; %>
 
