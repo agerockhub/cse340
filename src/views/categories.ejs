@@ -1,17 +1,16 @@
 <%- include('partials/header') %>
-
     <main>
         <h1>
             <%= title %>
         </h1>
+        <!-- ✅ Added Link for Criteria 3 -->
+        <p><a href="/categories/new">Add New Category</a></p>
 
         <h2>Categories</h2>
-
         <ul>
             <% if (categories && categories.length> 0) { %>
                 <% categories.forEach(category=> { %>
                     <li>
-                        <!-- ✅ Link to category details -->
                         <a href="/category/<%= category.category_id %>">
                             <%= category.name %>
                         </a>
@@ -22,5 +21,4 @@
                             <% } %>
         </ul>
     </main>
-
     <%- include('partials/footer') %>

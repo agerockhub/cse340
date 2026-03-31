@@ -1,0 +1,24 @@
+<!-- src/views/partials/messages.ejs -->
+<div class="flash-messages">
+    <% if (typeof flash==='function' ) { %>
+        <% const messages=flash(); %>
+            <% Object.keys(messages).forEach(type=> { %>
+                <% messages[type].forEach(msg=> { %>
+                    <div class="flash <%= type %>">
+                        <%= msg %>
+                    </div>
+                    <% }); %>
+                        <% }); %>
+                            <% } %>
+
+                                <!-- ✅ Also handle server-side validation errors here -->
+                                <% if (locals.errors) { %>
+                                    <ul class="error-messages">
+                                        <% errors.forEach(error=> { %>
+                                            <li class="flash error">
+                                                <%= error.msg %>
+                                            </li>
+                                            <% }) %>
+                                    </ul>
+                                    <% } %>
+</div>

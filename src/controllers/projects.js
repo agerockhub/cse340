@@ -1,3 +1,4 @@
+// src/controllers/projects.js
 import { 
     getUpcomingProjects, 
     getProjectDetails, 
@@ -46,7 +47,13 @@ const showProjectDetailsPage = async (req, res, next) => {
 const showNewProjectForm = async (req, res, next) => {
     try {
         const organizations = await getAllOrganizations();
-        res.render('new-project', { title: 'Add New Service Project', organizations });
+        // Initialize an empty project object so the view doesn't crash on 'project.title'
+        res.render('new-project', { 
+            title: 'Add New Service Project', 
+            organizations, 
+            errors: null, 
+            project: {} 
+        });
     } catch (err) {
         next(err);
     }
@@ -57,12 +64,15 @@ const processNewProjectForm = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         const organizations = await getAllOrganizations();
+        // ✅ Return the user's data (req.body) so the form stays filled
         return res.render('new-project', {
             title: 'Add New Service Project',
             organizations,
-            errors: errors.array()
+            errors: errors.array(),
+            project: req.body 
         });
     }
+
     const { title, description, location, date, organizationId } = req.body;
     try {
         const newProjectId = await createProject(title, description, location, date, organizationId);
@@ -103,11 +113,12 @@ const processEditProjectForm = async (req, res, next) => {
 
     if (!errors.isEmpty()) {
         const organizations = await getAllOrganizations();
+        // ✅ Ensure we keep the ID so the form action URL remains valid
         const project = req.body;
         project.project_id = projectId;
 
         return res.render('update-project', {
-            title: 'Edit Project',
+            title: `Edit Project`,
             project,
             organizations,
             errors: errors.array()
@@ -125,7 +136,6 @@ const processEditProjectForm = async (req, res, next) => {
     }
 };
 
-// ✅ ALL EXPORTS RESTORED
 export { 
     showProjectsPage, 
     showProjectDetailsPage, 

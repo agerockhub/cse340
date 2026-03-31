@@ -9,7 +9,7 @@ import {
 import { getProjectDetails, getCategoriesByServiceProjectId, updateCategoryAssignments } from '../models/projects.js';
 import { body, validationResult } from 'express-validator';
 
-// ✅ Validation Rules
+// ✅ Criteria 4: Server-side Validation Rules
 const categoryValidation = [
     body('categoryName')
         .trim()
@@ -35,7 +35,6 @@ const showCategoryDetailsPage = async (req, res, next) => {
     } catch (err) { next(err); }
 };
 
-// ✅ ADDED: Show/Process Add Category
 const showAddCategoryForm = (req, res) => {
     res.render('add-category', { title: 'Add New Category', errors: null, categoryName: '' });
 };
@@ -53,7 +52,6 @@ const processAddCategoryForm = async (req, res, next) => {
     } catch (err) { next(err); }
 };
 
-// ✅ ADDED: Show/Process Edit Category
 const showEditCategoryForm = async (req, res, next) => {
     try {
         const category = await getCategoryById(req.params.id);
@@ -78,14 +76,46 @@ const processEditCategoryForm = async (req, res, next) => {
     } catch (err) { next(err); }
 };
 
-// (Assign Category functions stay the same...)
-const showAssignCategoriesForm = async (req, res, next) => { /* ... existing code ... */ };
-const processAssignCategoriesForm = async (req, res, next) => { /* ... existing code ... */ };
+// ✅ Criteria 3: FIXED - Added missing awaits to prevent page hanging
+const showAssignCategoriesForm = async (req, res, next) => {
+    try {
+        const projectId = req.params.projectId;
+        const projectDetails = await getProjectDetails(projectId); 
+        const categories = await getAllCategories(); 
+        const assignedCategories = await getCategoriesByServiceProjectId(projectId); 
 
+        res.render('assign-categories', { 
+            title: 'Assign Categories to Project', 
+            projectId, 
+            projectDetails, 
+            categories, 
+            assignedCategories 
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+const processAssignCategoriesForm = async (req, res, next) => {
+    try {
+        const projectId = req.params.projectId;
+        const selectedCategoryIds = req.body.categoryIds || [];
+        const categoryIdsArray = Array.isArray(selectedCategoryIds) ? selectedCategoryIds : [selectedCategoryIds];
+        await updateCategoryAssignments(projectId, categoryIdsArray);
+        req.flash('success', 'Categories updated successfully.');
+        res.redirect(`/project/${projectId}`);
+    } catch (err) { next(err); }
+};
+
+// ✅ ALL EXPORTS RESTORED (Fixes your SyntaxError)
 export { 
-    showCategoriesPage, showCategoryDetailsPage, 
-    showAssignCategoriesForm, processAssignCategoriesForm,
-    showAddCategoryForm, processAddCategoryForm,
-    showEditCategoryForm, processEditCategoryForm,
-    categoryValidation 
+    showCategoriesPage, 
+    showCategoryDetailsPage, 
+    showAssignCategoriesForm, 
+    processAssignCategoriesForm,
+    showAddCategoryForm, 
+    processAddCategoryForm, 
+    showEditCategoryForm, 
+    processEditCategoryForm, 
+    categoryValidation // ✅ Add this
 };
