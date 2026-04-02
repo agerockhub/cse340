@@ -1,6 +1,19 @@
 // src/controllers/users.js
-import bcrypt from 'bcryptjs'; // Updated to bcryptjs to match your previous fix
+import bcrypt from 'bcryptjs';
 import { createUser, authenticateUser } from '../models/users.js';
+
+// --- Authentication Middleware ---
+
+/**
+ * Middleware to protect routes that require authentication
+ */
+const requireLogin = (req, res, next) => {
+    if (!req.session || !req.session.user) {
+        req.flash('error', 'You must be logged in to access that page.');
+        return res.redirect('/login');
+    }
+    next();
+};
 
 // --- Registration Functions ---
 
@@ -18,7 +31,7 @@ const processUserRegistrationForm = async (req, res) => {
         await createUser(name, email, passwordHash);
 
         req.flash('success', 'Registration successful! Please log in.');
-        res.redirect('/login'); // Redirecting to login after registration
+        res.redirect('/login'); 
     } catch (error) {
         console.error('Error registering user:', error);
         req.flash('error', 'An error occurred during registration. Please try again.');
@@ -28,12 +41,10 @@ const processUserRegistrationForm = async (req, res) => {
 
 // --- Login & Logout Functions ---
 
-// Renders the login view
 const showLoginForm = (req, res) => {
     res.render('login', { title: 'Login' });
 };
 
-// Processes the login submission
 const processLoginForm = async (req, res) => {
     const { email, password } = req.body;
 
@@ -41,19 +52,12 @@ const processLoginForm = async (req, res) => {
         const user = await authenticateUser(email, password);
 
         if (user) {
-            //  Add the user object to the session object
             req.session.user = user;
-
-            //  Log the user in the console for debugging
             console.log('User logged in:', user);
-
-            //  Add a success flash message
             req.flash('success', 'Login successful!');
-
-            //  Redirect to the home page
-            res.redirect('/');
+            // ✅ Redirect to dashboard instead of root
+            res.redirect('/dashboard');
         } else {
-            //  Handle failed authentication
             req.flash('error', 'Invalid email or password.');
             res.redirect('/login');
         }
@@ -64,17 +68,28 @@ const processLoginForm = async (req, res) => {
     }
 };
 
-// Processes the logout
 const processLogout = (req, res) => {
-    // Destroys the session
     req.session.destroy((err) => {
         if (err) {
             console.error('Error destroying session:', err);
             return res.redirect('/');
         }
-        // Redirect to login after session is gone
-        res.clearCookie('connect.sid'); // Clean up the session cookie
+        res.clearCookie('connect.sid'); 
         res.redirect('/login');
+    });
+};
+
+// --- Dashboard Function ---
+
+/**
+ * Renders the dashboard with user details from session
+ */
+const showDashboard = (req, res) => {
+    const user = req.session.user;
+    res.render('dashboard', { 
+        title: 'Dashboard',
+        name: user.name,
+        email: user.email
     });
 };
 
@@ -84,5 +99,7 @@ export {
     processUserRegistrationForm, 
     showLoginForm, 
     processLoginForm, 
-    processLogout 
+    processLogout,
+    requireLogin,
+    showDashboard 
 };

@@ -33,7 +33,13 @@ import {
 } from './categories.js';
 
 import { testErrorPage } from './errors.js';
-import {showUserRegistrationForm, processUserRegistrationForm, showLoginForm, processLoginForm, processLogout }from './users.js';
+import {
+    showUserRegistrationForm,
+    processUserRegistrationForm,
+    showLoginForm, processLoginForm,
+    processLogout, requireLogin,
+    showDashboard
+} from './users.js';
 
 const router = express.Router(); // This line must stay here!
 
@@ -76,6 +82,9 @@ router.post('/register', processUserRegistrationForm);
 router.get('/login', showLoginForm);
 router.post('/login', processLoginForm);
 router.get('/logout', processLogout);
+
+// Protected dashboard route
+router.get('/dashboard', requireLogin, showDashboard);
 
 // Error testing
 router.get('/test-error', testErrorPage);
