@@ -1,6 +1,5 @@
 import express from 'express';
 import { showHomePage } from './index.js';
-
 import { 
     showOrganizationsPage, 
     showOrganizationDetailsPage, 
@@ -34,6 +33,7 @@ import {
 } from './categories.js';
 
 import { testErrorPage } from './errors.js';
+import {showUserRegistrationForm, processUserRegistrationForm }from './users.js';
 
 const router = express.Router(); // ✅ This line must stay here!
 
@@ -67,6 +67,10 @@ router.post('/categories/edit/:id', categoryValidation, processEditCategoryForm)
 // Project-Category assignment routes
 router.get('/assign-categories/:projectId', showAssignCategoriesForm);
 router.post('/assign-categories/:projectId', processAssignCategoriesForm);
+
+// User registration routes
+router.get('/register', showUserRegistrationForm);
+router.post('/register', processUserRegistrationForm);
 
 // Error testing
 router.get('/test-error', testErrorPage);
