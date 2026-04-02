@@ -33,9 +33,9 @@ import {
 } from './categories.js';
 
 import { testErrorPage } from './errors.js';
-import {showUserRegistrationForm, processUserRegistrationForm }from './users.js';
+import {showUserRegistrationForm, processUserRegistrationForm, showLoginForm, processLoginForm, processLogout }from './users.js';
 
-const router = express.Router(); // ✅ This line must stay here!
+const router = express.Router(); // This line must stay here!
 
 // Main routes
 router.get('/', showHomePage);
@@ -71,6 +71,11 @@ router.post('/assign-categories/:projectId', processAssignCategoriesForm);
 // User registration routes
 router.get('/register', showUserRegistrationForm);
 router.post('/register', processUserRegistrationForm);
+
+// User login routes
+router.get('/login', showLoginForm);
+router.post('/login', processLoginForm);
+router.get('/logout', processLogout);
 
 // Error testing
 router.get('/test-error', testErrorPage);

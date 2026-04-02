@@ -1,4 +1,6 @@
-import db from './db.js'
+// src/models/users.js
+import db from './db.js';
+import bcrypt from 'bcryptjs'; // Ensure bcrypt is imported for verifyPassword to work
 
 const createUser = async (name, email, passwordHash) => {
     const default_role = 'user';
@@ -22,4 +24,50 @@ const createUser = async (name, email, passwordHash) => {
     return result.rows[0].user_id;
 };
 
-export { createUser };
+const findUserByEmail = async (email) => {
+    const query = `
+        SELECT user_id, name, email, password_hash, role_id 
+        FROM users 
+        WHERE email = $1
+    `;
+    const query_params = [email];
+    
+    const result = await db.query(query, query_params);
+
+    if (result.rows.length === 0) {
+        return null; // User not found
+    }
+    
+    return result.rows[0];
+};
+
+const verifyPassword = async (password, passwordHash) => {
+    return bcrypt.compare(password, passwordHash);
+};
+
+/**
+ * Authenticates a user by email and password
+ */
+const authenticateUser = async (email, password) => {
+    // 1. Use findUserByEmail to get the user
+    const user = await findUserByEmail(email);
+
+    // 2. If no user is found, return null
+    if (!user) {
+        return null;
+    }
+
+    // 3. Use verifyPassword to check if the password is correct
+    const isPasswordCorrect = await verifyPassword(password, user.password_hash);
+
+    // 4. If correct, remove password_hash and return user; otherwise return null
+    if (isPasswordCorrect) {
+        delete user.password_hash;
+        return user;
+    }
+
+    return null;
+};
+
+// Only export the functions the controller needs access to
+export { createUser, authenticateUser };

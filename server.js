@@ -48,9 +48,17 @@ app.use((req, res, next) => {
     next();
 });
 
-// Make NODE_ENV available in views
+// ✅ UPDATED: Middleware to set isLoggedIn and NODE_ENV
 app.use((req, res, next) => {
+    // Set isLoggedIn based on session user
+    res.locals.isLoggedIn = false;
+    if (req.session && req.session.user) {
+        res.locals.isLoggedIn = true;
+    }
+
+    // Set NODE_ENV for views
     res.locals.NODE_ENV = process.env.NODE_ENV?.toLowerCase() || 'production';
+    
     next();
 });
 
