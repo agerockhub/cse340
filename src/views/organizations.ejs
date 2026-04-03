@@ -7,29 +7,31 @@
 
         <p>Here are a few of our partner organizations:</p>
 
-        <!-- ✅ FIXED LINK -->
-        <p><a href="/organizations/new">Add a new organization</a></p>
+        <!-- ✅ Admin Only Link -->
+        <% if (user && user.role_name==='admin' ) { %>
+            <p><a href="/organizations/new">Add a new organization</a></p>
+            <% } %>
 
-        <ul>
-            <% if (organizations && organizations.length> 0) { %>
-                <% organizations.forEach(organization=> { %>
-                    <li>
-                        <img src="/images/<%= organization.logo_filename %>" alt="<%= organization.name %> logo">
+                <ul>
+                    <% if (organizations && organizations.length> 0) { %>
+                        <% organizations.forEach(organization=> { %>
+                            <li>
+                                <img src="/images/<%= organization.logo_filename %>"
+                                    alt="<%= organization.name %> logo">
 
-                        <!-- ✅ FIXED: Added link -->
-                        <strong>
-                            <a href="/organization/<%= organization.organization_id %>">
-                                <%= organization.name %>
-                            </a>
-                        </strong>
+                                <strong>
+                                    <a href="/organization/<%= organization.organization_id %>">
+                                        <%= organization.name %>
+                                    </a>
+                                </strong>
 
-                        : <%= organization.contact_email %>
-                    </li>
-                    <% }); %>
-                        <% } else { %>
-                            <li>No organizations available</li>
-                            <% } %>
-        </ul>
+                                : <%= organization.contact_email %>
+                            </li>
+                            <% }); %>
+                                <% } else { %>
+                                    <li>No organizations available</li>
+                                    <% } %>
+                </ul>
     </main>
 
     <%- include('partials/footer') %>

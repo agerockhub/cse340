@@ -48,13 +48,16 @@ app.use((req, res, next) => {
     next();
 });
 
-// ✅ UPDATED: Middleware to set isLoggedIn and NODE_ENV
+// UPDATED: Middleware to set isLoggedIn, user, and NODE_ENV
 app.use((req, res, next) => {
     // Set isLoggedIn based on session user
     res.locals.isLoggedIn = false;
     if (req.session && req.session.user) {
         res.locals.isLoggedIn = true;
     }
+
+    // ADDED: Make user data (including roles) available to all templates
+    res.locals.user = req.session.user || null;
 
     // Set NODE_ENV for views
     res.locals.NODE_ENV = process.env.NODE_ENV?.toLowerCase() || 'production';
