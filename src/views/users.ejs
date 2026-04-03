@@ -1,11 +1,11 @@
 <%- include('partials/header') %>
 
-    <main>
+    <main class="container">
         <h1>
             <%= title %>
         </h1>
 
-        <div class="table-container">
+        <section class="table-responsive">
             <table class="user-table">
                 <thead>
                     <tr>
@@ -25,7 +25,9 @@
                                     <%= user.email %>
                                 </td>
                                 <td>
-                                    <%= user.role_name %>
+                                    <span class="role-badge <%= user.role_name %>">
+                                        <%= user.role_name %>
+                                    </span>
                                 </td>
                             </tr>
                             <% }) %>
@@ -36,9 +38,9 @@
                                     <% } %>
                 </tbody>
             </table>
-        </div>
+        </section>
 
-        <p style="margin-top: 20px;">
+        <p class="back-link">
             <a href="/dashboard">← Back to Dashboard</a>
         </p>
     </main>

@@ -242,3 +242,79 @@ main ul li {
   background-color: #f44336;
   /* Red */
 }
+
+/* User Table Styles */
+.user-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 1rem;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
+
+.user-table thead tr {
+  background-color: #333;
+  /* Matches your nav color */
+  color: #ffffff;
+  text-align: left;
+  font-weight: bold;
+}
+
+.user-table th,
+.user-table td {
+  padding: 12px 15px;
+  border: 1px solid #dddddd;
+}
+
+.user-table tbody tr {
+  border-bottom: 1px solid #dddddd;
+}
+
+.user-table tbody tr:nth-of-type(even) {
+  background-color: #f3f3f3;
+}
+
+.user-table tbody tr:hover {
+  background-color: #f1f7ff;
+}
+
+/* Role Badges */
+.role-badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.role-badge.admin {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.role-badge.user {
+  background-color: #e2e3e5;
+  color: #383d41;
+  border: 1px solid #d6d8db;
+}
+
+.back-link {
+  margin-top: 30px;
+}
+
+.back-link a {
+  text-decoration: none;
+  color: #0056b3;
+  font-weight: bold;
+}
+
+.back-link a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive container for mobile */
+.table-responsive {
+  overflow-x: auto;
+}
