@@ -5,11 +5,21 @@
             <%= title %>
         </h1>
 
-        <h2>Dashboard</h2>
-        <p>Name: <%= name %>
+        <h2>Welcome, <%= name %>
+        </h2>
+        <p><strong>Username/Email:</strong>
+            <%= email %>
         </p>
-        <p>Username: <%= email %>
-        </p>
+
+        <!-- ✅ Admin Only Section -->
+        <% if (user && user.role_name==='admin' ) { %>
+            <section class="admin-tools" style="margin-top: 2rem; padding: 1rem; border: 2px solid #000;">
+                <h3>Administrator Tools</h3>
+                <ul>
+                    <li><a href="/users">View All Registered Users</a></li>
+                </ul>
+            </section>
+            <% } %>
 
     </main>
 

@@ -1,12 +1,7 @@
 // src/controllers/users.js
 import bcrypt from 'bcryptjs';
-import { createUser, authenticateUser } from '../models/users.js';
+import { createUser, authenticateUser, getAllUsers } from '../models/users.js';
 
-// --- Authentication Middleware ---
-
-/**
- * Middleware to protect routes that require authentication
- */
 const requireLogin = (req, res, next) => {
     if (!req.session || !req.session.user) {
         req.flash('error', 'You must be logged in to access that page.');
@@ -15,7 +10,19 @@ const requireLogin = (req, res, next) => {
     next();
 };
 
-// --- Registration Functions ---
+const requireRole = (role) => {
+    return (req, res, next) => {
+        if (!req.session || !req.session.user) {
+            req.flash('error', 'You must be logged in to access this page.');
+            return res.redirect('/login');
+        }
+        if (req.session.user.role_name !== role) {
+            req.flash('error', 'You do not have permission to access this page.');
+            return res.redirect('/dashboard'); // ✅ Redirect to dashboard per instructions
+        }
+        next();
+    };
+};
 
 const showUserRegistrationForm = (req, res) => {
     res.render('register', { title: 'Register' });
@@ -23,23 +30,17 @@ const showUserRegistrationForm = (req, res) => {
 
 const processUserRegistrationForm = async (req, res) => {
     const { name, email, password } = req.body;
-
     try {
         const salt = await bcrypt.genSalt(10);
         const passwordHash = await bcrypt.hash(password, salt);
-
         await createUser(name, email, passwordHash);
-
         req.flash('success', 'Registration successful! Please log in.');
         res.redirect('/login'); 
     } catch (error) {
-        console.error('Error registering user:', error);
-        req.flash('error', 'An error occurred during registration. Please try again.');
+        req.flash('error', 'An error occurred during registration.');
         res.redirect('/register');
     }
 };
-
-// --- Login & Logout Functions ---
 
 const showLoginForm = (req, res) => {
     res.render('login', { title: 'Login' });
@@ -47,43 +48,29 @@ const showLoginForm = (req, res) => {
 
 const processLoginForm = async (req, res) => {
     const { email, password } = req.body;
-
     try {
         const user = await authenticateUser(email, password);
-
         if (user) {
             req.session.user = user;
-            console.log('User logged in:', user);
             req.flash('success', 'Login successful!');
-            // ✅ Redirect to dashboard instead of root
             res.redirect('/dashboard');
         } else {
             req.flash('error', 'Invalid email or password.');
             res.redirect('/login');
         }
     } catch (error) {
-        console.error('Error during login:', error);
-        req.flash('error', 'An error occurred during login. Please try again.');
+        req.flash('error', 'An error occurred during login.');
         res.redirect('/login');
     }
 };
 
 const processLogout = (req, res) => {
-    req.session.destroy((err) => {
-        if (err) {
-            console.error('Error destroying session:', err);
-            return res.redirect('/');
-        }
+    req.session.destroy(() => {
         res.clearCookie('connect.sid'); 
         res.redirect('/login');
     });
 };
 
-// --- Dashboard Function ---
-
-/**
- * Renders the dashboard with user details from session
- */
 const showDashboard = (req, res) => {
     const user = req.session.user;
     res.render('dashboard', { 
@@ -94,32 +81,17 @@ const showDashboard = (req, res) => {
 };
 
 /**
- * Middleware factory to require specific role for route access
- * Returns middleware that checks if user has the required role
- * 
- * @param {string} role - The role name required (e.g., 'admin', 'user')
- * @returns {Function} Express middleware function
+ * ✅ NEW: Controller to display users list
  */
-const requireRole = (role) => {
-    return (req, res, next) => {
-        // Check if user is logged in first
-        if (!req.session || !req.session.user) {
-            req.flash('error', 'You must be logged in to access this page.');
-            return res.redirect('/login');
-        }
-
-        // Check if user's role matches the required role
-        if (req.session.user.role_name !== role) {
-            req.flash('error', 'You do not have permission to access this page.');
-            return res.redirect('/');
-        }
-
-        // User has required role, continue
-        next();
-    };
+const showUsersPage = async (req, res, next) => {
+    try {
+        const users = await getAllUsers();
+        res.render('users', { title: 'Manage Users', users });
+    } catch (err) {
+        next(err);
+    }
 };
 
-// Export all functions
 export { 
     showUserRegistrationForm, 
     processUserRegistrationForm, 
@@ -128,5 +100,6 @@ export {
     processLogout,
     requireLogin,
     showDashboard,
-    requireRole 
+    requireRole,
+    showUsersPage 
 };
