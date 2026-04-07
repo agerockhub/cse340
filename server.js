@@ -8,13 +8,11 @@ import session from 'express-session';
 import flash from './src/middleware/flash.js';
 
 const PORT = process.env.PORT || 3000;
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
 const app = express();
 
-// Sessions
+// 1. Sessions must come first
 app.use(session({
     secret: 'your-secret-key',
     resave: false,
@@ -22,10 +20,20 @@ app.use(session({
     cookie: { maxAge: 60 * 60 * 1000 }
 }));
 
-// Flash messages
+// 2. Flash messages next
 app.use(flash);
+
+// 3. ONE Middleware to rule them all (Consolidated)
 app.use((req, res, next) => {
+    // This is the source of truth for your EJS templates
+    const user = req.session.user || null;
+    res.locals.user = user;
+    res.locals.isLoggedIn = !!user;
+    
+    // Pass flash function/messages to locals
     res.locals.flash = req.flash;
+    
+    res.locals.NODE_ENV = process.env.NODE_ENV?.toLowerCase() || 'production';
     next();
 });
 
@@ -40,32 +48,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'src/views'));
 
-// Development logger
-app.use((req, res, next) => {
-    if (process.env.NODE_ENV === 'development') {
-        console.log(`${req.method} ${req.url}`);
-    }
-    next();
-});
-
-// UPDATED: Middleware to set isLoggedIn, user, and NODE_ENV
-app.use((req, res, next) => {
-    // Set isLoggedIn based on session user
-    res.locals.isLoggedIn = false;
-    if (req.session && req.session.user) {
-        res.locals.isLoggedIn = true;
-    }
-
-    // ADDED: Make user data (including roles) available to all templates
-    res.locals.user = req.session.user || null;
-
-    // Set NODE_ENV for views
-    res.locals.NODE_ENV = process.env.NODE_ENV?.toLowerCase() || 'production';
-    
-    next();
-});
-
-// Routes
+// 4. Routes last
 app.use('/', router);
 
 // 404 handler

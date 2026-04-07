@@ -4,7 +4,11 @@ import {
     getProjectDetails, 
     getCategoriesByProjectId, 
     createProject,
-    updateProject 
+    updateProject,
+    addVolunteer,       
+    removeVolunteer,    
+    isUserVolunteering, 
+    getVolunteeredProjects 
 } from '../models/projects.js';
 
 import { getAllOrganizations } from '../models/organizations.js';
@@ -37,7 +41,18 @@ const showProjectDetailsPage = async (req, res, next) => {
         const projectId = req.params.id;
         const project = await getProjectDetails(projectId);
         const categories = await getCategoriesByProjectId(projectId);
-        res.render('project', { title: project.title, project, categories });
+        
+        let isVolunteering = false;
+        if (req.session.user) {
+            isVolunteering = await isUserVolunteering(projectId, req.session.user.user_id);
+        }
+
+        res.render('project', { 
+            title: project.title, 
+            project, 
+            categories, 
+            isVolunteering 
+        });
     } catch (err) {
         next(err);
     }
@@ -47,7 +62,6 @@ const showProjectDetailsPage = async (req, res, next) => {
 const showNewProjectForm = async (req, res, next) => {
     try {
         const organizations = await getAllOrganizations();
-        // Initialize an empty project object so the view doesn't crash on 'project.title'
         res.render('new-project', { 
             title: 'Add New Service Project', 
             organizations, 
@@ -64,7 +78,6 @@ const processNewProjectForm = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         const organizations = await getAllOrganizations();
-        // ✅ Return the user's data (req.body) so the form stays filled
         return res.render('new-project', {
             title: 'Add New Service Project',
             organizations,
@@ -113,7 +126,6 @@ const processEditProjectForm = async (req, res, next) => {
 
     if (!errors.isEmpty()) {
         const organizations = await getAllOrganizations();
-        // ✅ Ensure we keep the ID so the form action URL remains valid
         const project = req.body;
         project.project_id = projectId;
 
@@ -136,6 +148,48 @@ const processEditProjectForm = async (req, res, next) => {
     }
 };
 
+// 7. Process Volunteer Action
+const processVolunteer = async (req, res, next) => {
+    try {
+        const projectId = req.params.id;
+        const userId = req.session.user.user_id;
+        await addVolunteer(projectId, userId);
+        req.flash('success', 'You have successfully signed up for this project!');
+        res.redirect(`/project/${projectId}`);
+    } catch (err) {
+        next(err);
+    }
+};
+
+// 8. Process Unvolunteer Action
+const processUnvolunteer = async (req, res, next) => {
+    try {
+        const projectId = req.params.id;
+        const userId = req.session.user.user_id;
+        await removeVolunteer(projectId, userId);
+        req.flash('success', 'You are no longer volunteering for this project.');
+        
+        const backURL = req.header('Referer') || `/project/${projectId}`;
+        res.redirect(backURL);
+    } catch (err) {
+        next(err);
+    }
+};
+
+// 9. Show Volunteering List Page
+const showVolunteeringPage = async (req, res, next) => {
+    try {
+        const userId = req.session.user.user_id;
+        const projects = await getVolunteeredProjects(userId);
+        res.render('volunteering', { 
+            title: 'My Volunteering Projects', 
+            projects 
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
 export { 
     showProjectsPage, 
     showProjectDetailsPage, 
@@ -143,5 +197,8 @@ export {
     processNewProjectForm,
     showEditProjectForm,
     processEditProjectForm,
-    projectValidation  
+    projectValidation,
+    processVolunteer,
+    processUnvolunteer,
+    showVolunteeringPage
 };

@@ -8,9 +8,6 @@ CREATE TABLE organization(
     contact_email VARCHAR(255) NOT NULL,
     logo_filename VARCHAR(255) NOT NULL
 );
--- ===================================
--- Insert sample data: organization
--- ===================================
 INSERT INTO organization (name, description, contact_email, logo_filename)
 VALUES (
         'Tech Solutions Ltd',
@@ -42,8 +39,9 @@ VALUES (
         'hello@creativemedia.com',
         'creativemedia_logo.png'
     );
-SELECT *
-FROM organization;
+-- ==================================
+-- service_project Table
+-- ==================================
 CREATE TABLE service_project (
     project_id SERIAL PRIMARY KEY,
     organization_id INT NOT NULL,
@@ -53,9 +51,6 @@ CREATE TABLE service_project (
     project_date DATE NOT NULL,
     CONSTRAINT fk_organization FOREIGN KEY (organization_id) REFERENCES organization(organization_id) ON DELETE CASCADE
 );
---===========================
--- insert sample data
---===========================
 INSERT INTO service_project (
         organization_id,
         title,
@@ -63,8 +58,7 @@ INSERT INTO service_project (
         location,
         project_date
     )
-VALUES -- Organization 1
-    (
+VALUES (
         1,
         'Community Coding Bootcamp',
         'Training youth in basic programming skills.',
@@ -85,7 +79,6 @@ VALUES -- Organization 1
         'Tamale',
         '2026-06-20'
     ),
-    -- Organization 2
     (
         2,
         'Free Health Screening',
@@ -107,7 +100,6 @@ VALUES -- Organization 1
         'Sunyani',
         '2026-07-05'
     ),
-    -- Organization 3
     (
         3,
         'Global Education Conference',
@@ -129,7 +121,6 @@ VALUES -- Organization 1
         'Kumasi',
         '2026-08-01'
     ),
-    -- Organization 4
     (
         4,
         'Tree Planting Campaign',
@@ -151,7 +142,6 @@ VALUES -- Organization 1
         'Ho',
         '2026-09-10'
     ),
-    -- Organization 5
     (
         5,
         'Small Business Marketing Workshop',
@@ -173,10 +163,8 @@ VALUES -- Organization 1
         'Tamale',
         '2026-07-22'
     );
-SELECT *
-FROM service_project;
 -- ==================================
--- category Table
+-- category Tables
 -- ==================================
 CREATE TABLE category (
     category_id SERIAL PRIMARY KEY,
@@ -188,9 +176,6 @@ VALUES ('Education'),
     ('Technology'),
     ('Environment'),
     ('Community Development');
--- ==================================
--- project_category (Junction Table)
--- ==================================
 CREATE TABLE project_category (
     project_id INT NOT NULL,
     category_id INT NOT NULL,
@@ -198,26 +183,21 @@ CREATE TABLE project_category (
     CONSTRAINT fk_project FOREIGN KEY (project_id) REFERENCES service_project(project_id) ON DELETE CASCADE,
     CONSTRAINT fk_category FOREIGN KEY (category_id) REFERENCES category(category_id) ON DELETE CASCADE
 );
--- ==================================
--- Sample project-category relationships
--- ==================================
 INSERT INTO project_category (project_id, category_id)
-VALUES -- Education
-    (1, 1),
+VALUES (1, 1),
     (2, 1),
     (7, 1),
-    -- Health
     (4, 2),
     (5, 2),
-    -- Technology
     (1, 3),
     (3, 3),
-    -- Environment
     (10, 4),
     (11, 4),
-    -- Community Development
     (6, 5),
     (12, 5);
+-- ==================================
+-- Auth & Roles Tables
+-- ==================================
 CREATE TABLE roles (
     role_id SERIAL PRIMARY KEY,
     role_name VARCHAR(50) UNIQUE NOT NULL,
@@ -226,9 +206,6 @@ CREATE TABLE roles (
 INSERT INTO roles (role_name, role_description)
 VALUES ('user', 'Standard user with basic access'),
     ('admin', 'Administrator with full system access');
--- Verify the data was inserted
-SELECT *
-FROM roles;
 CREATE TABLE users (
     user_id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -237,22 +214,14 @@ CREATE TABLE users (
     role_id INTEGER REFERENCES roles(role_id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
--- Insert a test user
-INSERT INTO users (name, email, password_hash, role_id)
-VALUES (
-        'testuser',
-        'test@example.com',
-        'placeholder_hash',
-        1
-    );
--- Join users and roles to see complete information
-SELECT u.user_id,
-    u.name,
-    u.email,
-    r.role_name,
-    r.role_description
-FROM users u
-    JOIN roles r ON u.role_id = r.role_id;
--- Delete the test user
-DELETE FROM users
-WHERE email = 'test@example.com';
+-- ==================================
+-- NEW: project_volunteers (Junction Table)
+-- ==================================
+CREATE TABLE project_volunteers (
+    project_id INT NOT NULL,
+    user_id INT NOT NULL,
+    volunteered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (project_id, user_id),
+    CONSTRAINT fk_project_volunteer FOREIGN KEY (project_id) REFERENCES service_project(project_id) ON DELETE CASCADE,
+    CONSTRAINT fk_user_volunteer FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);

@@ -18,7 +18,7 @@ const requireRole = (role) => {
         }
         if (req.session.user.role_name !== role) {
             req.flash('error', 'You do not have permission to access this page.');
-            return res.redirect('/dashboard'); // ✅ Redirect to dashboard per instructions
+            return res.redirect('/dashboard');
         }
         next();
     };
@@ -72,17 +72,13 @@ const processLogout = (req, res) => {
 };
 
 const showDashboard = (req, res) => {
-    const user = req.session.user;
+    // ✅ Updated to pass the full user object
     res.render('dashboard', { 
         title: 'Dashboard',
-        name: user.name,
-        email: user.email
+        user: req.session.user 
     });
 };
 
-/**
- * ✅ NEW: Controller to display users list
- */
 const showUsersPage = async (req, res, next) => {
     try {
         const users = await getAllUsers();

@@ -1,26 +1,35 @@
 <%- include('partials/header') %>
 
-    <main>
-        <h1>
-            <%= title %>
-        </h1>
+    <main class="container">
+        <h1>User Dashboard</h1>
 
-        <h2>Welcome, <%= name %>
-        </h2>
-        <p><strong>Username/Email:</strong>
-            <%= email %>
-        </p>
+        <section class="welcome-message">
+            <p>Welcome back, <strong>
+                    <%= user.name %>
+                </strong>!</p>
+        </section>
 
-        <!-- ✅ Admin Only Section -->
-        <% if (user && user.role_name==='admin' ) { %>
-            <section class="admin-tools" style="margin-top: 2rem; padding: 1rem; border: 2px solid #000;">
-                <h3>Administrator Tools</h3>
+        <section class="dashboard-actions" style="margin-top: 2rem;">
+            <h2>My Activities</h2>
+            <ul>
+                <!-- THIS IS THE REQUIRED LINK -->
+                <li><a href="/volunteering">View the projects I am volunteering for</a></li>
+            </ul>
+
+            <% if (user.role_name==='admin' ) { %>
+                <hr>
+                <h2>Administrative Tasks</h2>
                 <ul>
-                    <li><a href="/users">View All Registered Users</a></li>
+                    <li><a href="/organizations/new">Add New Organization</a></li>
+                    <li><a href="/new-project">Create New Service Project</a></li>
+                    <li><a href="/users">Manage All Users</a></li>
                 </ul>
-            </section>
-            <% } %>
+                <% } %>
+        </section>
 
+        <p style="margin-top: 2rem;">
+            <a href="/logout" class="btn-secondary">Log Out</a>
+        </p>
     </main>
 
     <%- include('partials/footer') %>

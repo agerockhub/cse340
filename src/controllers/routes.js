@@ -18,7 +18,10 @@ import {
     processNewProjectForm,
     projectValidation,
     showEditProjectForm,
-    processEditProjectForm
+    processEditProjectForm,
+    processVolunteer,      // ✅ Added
+    processUnvolunteer,    // ✅ Added
+    showVolunteeringPage   // ✅ Added
 } from './projects.js';
 
 import { 
@@ -43,7 +46,7 @@ import {
     requireLogin,
     showDashboard,
     requireRole,
-    showUsersPage // ✅ Added
+    showUsersPage
 } from './users.js';
 
 const router = express.Router(); 
@@ -68,6 +71,11 @@ router.post('/new-project', requireRole('admin'), projectValidation, processNewP
 router.get('/edit-project/:id', requireRole('admin'), showEditProjectForm);
 router.post('/edit-project/:id', requireRole('admin'), projectValidation, processEditProjectForm);
 
+// ✅ NEW: Volunteering Routes
+router.post('/project/volunteer/:id', requireLogin, processVolunteer);
+router.post('/project/unvolunteer/:id', requireLogin, processUnvolunteer);
+router.get('/volunteering', requireLogin, showVolunteeringPage);
+
 // --- Category Management Routes ---
 router.get('/category/:id', showCategoryDetailsPage);
 router.get('/categories/new', requireRole('admin'), showAddCategoryForm);
@@ -88,7 +96,7 @@ router.get('/logout', processLogout);
 
 // --- Protected User Routes ---
 router.get('/dashboard', requireLogin, showDashboard);
-router.get('/users', requireRole('admin'), showUsersPage); // ✅ NEW Protected Route
+router.get('/users', requireRole('admin'), showUsersPage); 
 
 router.get('/test-error', testErrorPage);
 

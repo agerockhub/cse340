@@ -114,7 +114,6 @@ const createProject = async (title, description, location, date, organizationId)
 
 /**
  * Updates an existing service project
- * Matches the pattern in updateOrganization
  */
 const updateProject = async (projectId, title, description, location, date, organizationId) => {
     const query = `
@@ -132,13 +131,56 @@ const updateProject = async (projectId, title, description, location, date, orga
     const params = [title, description, location, date, organizationId, projectId];
     const result = await db.query(query, params);
 
-    // ✅ Throw error if the update failed
     if (result.rows.length === 0) {
         throw new Error('Project not found or update failed');
     }
 
-    // Return the updated project ID
     return result.rows[0].project_id;
+};
+
+// --- NEW VOLUNTEER FUNCTIONS ---
+
+const addVolunteer = async (projectId, userId) => {
+    const query = `
+        INSERT INTO project_volunteers (project_id, user_id) 
+        VALUES ($1, $2) 
+        ON CONFLICT DO NOTHING
+    `;
+    return await db.query(query, [projectId, userId]);
+};
+
+const removeVolunteer = async (projectId, userId) => {
+    const query = `
+        DELETE FROM project_volunteers 
+        WHERE project_id = $1 AND user_id = $2
+    `;
+    return await db.query(query, [projectId, userId]);
+};
+
+const isUserVolunteering = async (projectId, userId) => {
+    const query = `
+        SELECT 1 FROM project_volunteers 
+        WHERE project_id = $1 AND user_id = $2
+    `;
+    const result = await db.query(query, [projectId, userId]);
+    return result.rows.length > 0;
+};
+
+const getVolunteeredProjects = async (userId) => {
+    const query = `
+        SELECT 
+            sp.project_id, 
+            sp.title, 
+            sp.project_date, 
+            o.name as organization_name 
+        FROM service_project sp
+        JOIN project_volunteers pv ON sp.project_id = pv.project_id
+        JOIN organization o ON sp.organization_id = o.organization_id
+        WHERE pv.user_id = $1
+        ORDER BY sp.project_date;
+    `;
+    const result = await db.query(query, [userId]);
+    return result.rows;
 };
 
 // ✅ ALL EXPORTS INCLUDED
@@ -151,5 +193,9 @@ export {
     getCategoriesByServiceProjectId,
     updateCategoryAssignments,
     createProject,
-    updateProject
+    updateProject,
+    addVolunteer,
+    removeVolunteer,
+    isUserVolunteering,
+    getVolunteeredProjects
 };
