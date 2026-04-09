@@ -1,24 +1,34 @@
 <%- include('partials/header') %>
-    <main>
+
+    <main class="container">
         <h1>
             <%= title %>
         </h1>
-        <!-- ✅ Added Link for Criteria 3 -->
-        <p><a href="/categories/new">Add New Category</a></p>
 
-        <h2>Categories</h2>
-        <ul>
-            <% if (categories && categories.length> 0) { %>
-                <% categories.forEach(category=> { %>
-                    <li>
-                        <a href="/category/<%= category.category_id %>">
-                            <%= category.name %>
-                        </a>
-                    </li>
-                    <% }) %>
-                        <% } else { %>
-                            <li>No categories available</li>
-                            <% } %>
-        </ul>
+        <% if (user && user.role_name==='admin' ) { %>
+            <p><a href="/categories/new" class="btn-primary">Add New Category</a></p>
+            <% } %>
+
+                <h2>Available Categories</h2>
+
+                <ul class="category-list">
+                    <% if (categories && categories.length> 0) { %>
+                        <% categories.forEach(cat=> { %>
+                            <li style="margin-bottom: 1rem;">
+                                <a href="/category/<%= cat.category_id %>"
+                                    style="font-weight: bold; font-size: 1.2rem;">
+                                    <%= cat.name %>
+                                </a>
+
+                                <% if (user && user.role_name==='admin' ) { %>
+                                    | <a href="/categories/edit/<%= cat.category_id %>">Edit Name</a>
+                                    <% } %>
+                            </li>
+                            <% }) %>
+                                <% } else { %>
+                                    <p>No categories found.</p>
+                                    <% } %>
+                </ul>
     </main>
+
     <%- include('partials/footer') %>

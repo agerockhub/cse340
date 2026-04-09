@@ -9,28 +9,31 @@ import {
 import { getProjectDetails, getCategoriesByServiceProjectId, updateCategoryAssignments } from '../models/projects.js';
 import { body, validationResult } from 'express-validator';
 
-// ✅ Criteria 4: Server-side Validation Rules
+// Validation Rules
 const categoryValidation = [
     body('categoryName')
         .trim()
         .notEmpty().withMessage('Category name is required.')
         .isLength({ min: 3 }).withMessage('Category name must be at least 3 characters.')
-        .isLength({ max: 100 }).withMessage('Category name cannot exceed 100 characters.')
 ];
 
+// 1. Show all categories list
 const showCategoriesPage = async (req, res, next) => {
     try {
         const categories = await getAllCategories();
-        res.render('categories', { title: 'Categories', categories });
+        // Passing 'categories' as an array for the list view
+        res.render('categories', { title: 'All Categories', categories });
     } catch (err) { next(err); }
 };
 
+// 2. Show single category details (and projects in that category)
 const showCategoryDetailsPage = async (req, res, next) => {
     try {
         const categoryId = req.params.id;
         const category = await getCategoryById(categoryId);
         if (!category) throw new Error('Category Not Found');
         const projects = await getProjectsByCategoryId(categoryId);
+        // This renders 'category.ejs' (singular)
         res.render('category', { title: category.name, category, projects });
     } catch (err) { next(err); }
 };
@@ -76,7 +79,6 @@ const processEditCategoryForm = async (req, res, next) => {
     } catch (err) { next(err); }
 };
 
-// ✅ Criteria 3: FIXED - Added missing awaits to prevent page hanging
 const showAssignCategoriesForm = async (req, res, next) => {
     try {
         const projectId = req.params.projectId;
@@ -91,9 +93,7 @@ const showAssignCategoriesForm = async (req, res, next) => {
             categories, 
             assignedCategories 
         });
-    } catch (err) {
-        next(err);
-    }
+    } catch (err) { next(err); }
 };
 
 const processAssignCategoriesForm = async (req, res, next) => {
@@ -107,7 +107,6 @@ const processAssignCategoriesForm = async (req, res, next) => {
     } catch (err) { next(err); }
 };
 
-// ✅ ALL EXPORTS RESTORED (Fixes your SyntaxError)
 export { 
     showCategoriesPage, 
     showCategoryDetailsPage, 
@@ -117,5 +116,5 @@ export {
     processAddCategoryForm, 
     showEditCategoryForm, 
     processEditCategoryForm, 
-    categoryValidation // ✅ Add this
+    categoryValidation 
 };
